@@ -24,9 +24,9 @@ In `config/services.php`, add the following:
 
 ```php
 'aliyun-sms' => [
-    'key' => env('ALIYUN_SMS_AK'),
-    'secret' => env('ALIYUN_SMS_AS'),
-    'sign-name' => env('ALIYUN_SMS_SIGN_NAME'),
+    'access_key' => env('ALIYUN_SMS_AK'),
+    'access_secret' => env('ALIYUN_SMS_AS'),
+    'sign_name' => env('ALIYUN_SMS_SIGN_NAME'),
 ],
 ```
 
