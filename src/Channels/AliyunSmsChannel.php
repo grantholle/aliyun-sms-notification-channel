@@ -40,6 +40,11 @@ class AliyunSmsChannel
 
         $message = $notification->toAliyunSms($notifiable);
 
-        return $this->aliyun->sendSms($to, $message->template, $message->data);
+        return $this->aliyun->sendSms(
+            $to,
+            $message->template,
+            $message->data,
+            config('services.aliyun-sms')
+        );
     }
 }
