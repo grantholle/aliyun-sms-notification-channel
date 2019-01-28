@@ -1,0 +1,46 @@
+{
+    "name": "grantholle/aliyun-sms-notification-channel",
+    "description": "Aliyun SMS Notification Channel for Laravel.",
+    "keywords": ["laravel", "notifications", "aliyun", "sms"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Grant Holle",
+            "homepage": "http://grantholle.com"
+        }
+    ],
+    "require": {
+        "php": "^7.1.3",
+        "mrgoon/aliyun-sms": "^2.0"
+    },
+    "require-dev": {
+        "illuminate/notifications": "~5.7",
+        "mockery/mockery": "^1.0",
+        "phpunit/phpunit": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "GrantHolle\\Notifications\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "GrantHolle\\Tests\\Notifications\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        },
+        "laravel": {
+            "providers": [
+                "GrantHolle\\Notifications\\AliyunSmsChannelServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
