@@ -1,13 +1,13 @@
 <?php
 
-namespace Illuminate\Notifications;
+namespace GrantHolle\Notifications;
 
 use Nexmo\Client as NexmoClient;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Notification;
 use Mrgoon\AliSms\AliSms;
 
-class NexmoChannelServiceProvider extends ServiceProvider
+class AliyunSmsChannelServiceProvider extends ServiceProvider
 {
     /**
      * Register the service provider.
