@@ -32,9 +32,6 @@
         "sort-packages": true
     },
     "extra": {
-        "branch-alias": {
-            "dev-master": "1.0-dev"
-        },
         "laravel": {
             "providers": [
                 "GrantHolle\\Notifications\\AliyunSmsChannelServiceProvider"
