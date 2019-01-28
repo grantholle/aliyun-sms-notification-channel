@@ -10,7 +10,7 @@ composer require grantholle/aliyun-sms-notification-channel
 
 ## Configuration
 
-It's preferred to include sensitive keys and secrets in the `.env` file so that information is not included in source control.
+It's preferred to include sensitive keys and secrets in the `.env` file so that the information is not included in source control.
 
 In your `.env` file, add some keys:
 
