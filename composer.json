@@ -1,7 +1,7 @@
 {
     "name": "grantholle/aliyun-sms-notification-channel",
     "description": "Aliyun SMS Notification Channel for Laravel.",
-    "keywords": ["laravel", "notifications", "aliyun", "sms"],
+    "keywords": ["laravel", "notifications", "aliyun", "sms", "阿里云"],
     "license": "MIT",
     "authors": [
         {
