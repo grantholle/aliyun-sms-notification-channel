@@ -4,6 +4,7 @@ namespace GrantHolle\Notifications\Channels;
 
 use Illuminate\Notifications\Notification;
 use Mrgoon\AliSms\AliSms;
+use GrantHolle\Exceptions\AliyunSmsException;
 
 class AliyunSmsChannel
 {
@@ -40,11 +41,17 @@ class AliyunSmsChannel
 
         $message = $notification->toAliyunSms($notifiable);
 
-        return $this->aliyun->sendSms(
+        $res = $this->aliyun->sendSms(
             $to,
             $message->template,
             $message->data,
             config('services.aliyun-sms')
         );
+
+        if ($res->Code !== 'OK') {
+            throw new AliyunSmsException($res->Message . ' (' . $res->Code . ')');
+        }
+
+        return $res;
     }
 }
