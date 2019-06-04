@@ -4,7 +4,7 @@ namespace GrantHolle\Notifications\Channels;
 
 use Illuminate\Notifications\Notification;
 use Mrgoon\AliSms\AliSms;
-use GrantHolle\Exceptions\AliyunSmsException;
+use GrantHolle\Notifications\Exceptions\AliyunSmsException;
 
 class AliyunSmsChannel
 {

@@ -1,5 +1,5 @@
 <?php
 
-namespace GrantHolle\Exceptions;
+namespace GrantHolle\Notifications\Exceptions;
 
 class AliyunSmsException extends \Exception {}
