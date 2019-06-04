@@ -51,7 +51,9 @@ class AliyunMessage
      */
     public function data(Array $data)
     {
-        $this->data = $data;
+        foreach ($data as $key => $value) {
+            $this->data[$key] = (string) $value;
+        }
 
         return $this;
     }
