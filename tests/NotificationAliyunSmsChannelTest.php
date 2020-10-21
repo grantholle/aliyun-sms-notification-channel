@@ -2,55 +2,54 @@
 
 namespace GrantHolle\Tests\Notifications;
 
-use Mockery as m;
-use PHPUnit\Framework\TestCase;
+use AlibabaCloud\Client\Result\Result;
+use AlibabaCloud\Dysmsapi\V20170525\SendSms;
+use GrantHolle\Notifications\Channels\AliyunSmsChannel;
+use GrantHolle\Notifications\Messages\AliyunMessage;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
-use GrantHolle\Notifications\Messages\AliyunMessage;
-use GrantHolle\Notifications\Channels\AliyunSmsChannel;
+use Mockery;
+use PHPUnit\Framework\TestCase;
 
 class NotificationAliyunSmsChannelTest extends TestCase
 {
-    public function tearDown()
-    {
-        m::close();
-    }
-
     public function testSmsIsSentViaAliyun()
     {
         $notification = new NotificationAliyunChannelTestNotification;
         $notifiable = new NotificationAliyunChannelTestNotifiable;
+        $message = $notification->toAliyunSms($notifiable);
 
-        $channel = new AliyunSmsChannel(
-            $nexmo = m::mock(Client::class), '4444444444'
-        );
+        $aliyun = Mockery::mock(SendSms::class);
+        $result = Mockery::mock(Result::class);
+        $result->shouldReceive('get')
+               ->with('Code')
+               ->andReturn('OK');
 
-        $nexmo->shouldReceive('message->send')->with([
-            'type' => 'text',
-            'from' => '4444444444',
-            'to' => '5555555555',
-            'text' => 'this is my message',
-        ]);
+        $aliyun->shouldReceive('withPhoneNumbers')
+               ->andReturnUsing(function ($phoneNumbers) use ($notifiable, $aliyun) {
+                   $this->assertEquals($notifiable->phone_number, $phoneNumbers);
 
-        $channel->send($notifiable, $notification);
-    }
+                   return $aliyun;
+               });
 
-    public function testSmsIsSentViaAliyunWithCustomFrom()
-    {
-        $notification = new NotificationAliyunChannelTestCustomFromNotification;
-        $notifiable = new NotificationAliyunChannelTestNotifiable;
+        $aliyun->shouldReceive('withTemplateCode')
+               ->andReturnUsing(function ($template) use ($message, $aliyun) {
+                   $this->assertEquals($message->template, $template);
 
-        $channel = new AliyunSmsChannel(
-            $nexmo = m::mock(Client::class), '4444444444'
-        );
+                   return $aliyun;
+               });
 
-        $nexmo->shouldReceive('message->send')->with([
-            'type' => 'unicode',
-            'from' => '5554443333',
-            'to' => '5555555555',
-            'text' => 'this is my message',
-        ]);
+        $aliyun->shouldReceive('withTemplateParam')
+               ->andReturnUsing(function ($param) use ($message, $aliyun) {
+                   $this->assertEquals(json_encode($message->data), $param);
 
+                   return $aliyun;
+               });
+
+        $aliyun->shouldReceive('request')
+               ->andReturn($result);
+
+        $channel = new AliyunSmsChannel($aliyun);
         $channel->send($notifiable, $notification);
     }
 }
@@ -60,20 +59,17 @@ class NotificationAliyunChannelTestNotifiable
     use Notifiable;
 
     public $phone_number = '5555555555';
+
+    public function routeNotificationForAliyun(Notification $notification)
+    {
+        return $this->phone_number;
+    }
 }
 
 class NotificationAliyunChannelTestNotification extends Notification
 {
-    public function toAliyun($notifiable)
+    public function toAliyunSms($notifiable)
     {
-        return new AliyunMessage('this is my message');
-    }
-}
-
-class NotificationAliyunChannelTestCustomFromNotification extends Notification
-{
-    public function toAliyun($notifiable)
-    {
-        return (new AliyunMessage('this is my message'))->from('5554443333')->unicode();
+        return new AliyunMessage('template_code', [ 'key' => 'value' ]);
     }
 }
