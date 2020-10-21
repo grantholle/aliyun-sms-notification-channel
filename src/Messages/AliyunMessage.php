@@ -14,17 +14,17 @@ class AliyunMessage
     /**
      * The message placeholders.
      *
-     * @var Array
+     * @var array
      */
     public $data = [];
 
     /**
      * Create a new message instance.
      *
-     * @param  string  $content
-     * @return void
+     * @param string $template
+     * @param array $data
      */
-    public function __construct(string $template = '', Array $data = [])
+    public function __construct(string $template = '', array $data = [])
     {
         $this->template = $template;
         $this->data = $data;
@@ -33,7 +33,7 @@ class AliyunMessage
     /**
      * Set the template.
      *
-     * @param  string  $template
+     * @param string $template
      * @return $this
      */
     public function template(string $template)
@@ -46,10 +46,10 @@ class AliyunMessage
     /**
      * Set the template placeholders.
      *
-     * @param  Array  $data
+     * @param array $data
      * @return $this
      */
-    public function data(Array $data)
+    public function data(array $data)
     {
         foreach ($data as $key => $value) {
             $this->data[$key] = (string) $value;

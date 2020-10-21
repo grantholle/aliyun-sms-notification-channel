@@ -2,26 +2,26 @@
 
 namespace GrantHolle\Notifications\Channels;
 
-use Illuminate\Notifications\Notification;
-use Mrgoon\AliSms\AliSms;
+use AlibabaCloud\Client\Exception\ClientException;
+use AlibabaCloud\Client\Exception\ServerException;
+use AlibabaCloud\Dysmsapi\V20170525\SendSms;
 use GrantHolle\Notifications\Exceptions\AliyunSmsException;
+use GrantHolle\Notifications\Messages\AliyunMessage;
+use Illuminate\Notifications\Notification;
 
 class AliyunSmsChannel
 {
     /**
-     * The Nexmo client instance.
-     *
-     * @var \Mrgoon\AliSms\AliSms
+     * @var SendSms
      */
     protected $aliyun;
 
     /**
      * Create a new Aliyun SMS channel instance.
      *
-     * @param  \Mrgoon\AliSms\AliSms  $aliyun
-     * @return void
+     * @param SendSms $aliyun
      */
-    public function __construct(AliSms $aliyun)
+    public function __construct(SendSms $aliyun)
     {
         $this->aliyun = $aliyun;
     }
@@ -29,27 +29,35 @@ class AliyunSmsChannel
     /**
      * Send the given notification.
      *
-     * @param  mixed  $notifiable
-     * @param  \Illuminate\Notifications\Notification  $notification
+     * @param mixed $notifiable
+     * @param Notification $notification
+     *
      * @return mixed
+     * @throws AliyunSmsException
+     * @throws ClientException
+     * @throws ServerException
      */
     public function send($notifiable, Notification $notification)
     {
-        if (! $to = $notifiable->routeNotificationFor('aliyun', $notification)) {
-            return;
+        if (!$to = $notifiable->routeNotificationFor('aliyun', $notification)) {
+            return null;
         }
 
+        /**
+         * @var AliyunMessage $message
+         */
         $message = $notification->toAliyunSms($notifiable);
 
-        $res = $this->aliyun->sendSms(
-            $to,
-            $message->template,
-            $message->data,
-            config('services.aliyun-sms')
-        );
+        if (filled($message->data)) {
+            $this->aliyun->withTemplateParam(json_encode($message->data));
+        }
 
-        if ($res->Code !== 'OK') {
-            throw new AliyunSmsException($res->Message . ' (' . $res->Code . ')');
+        $res = $this->aliyun->withPhoneNumbers($to)
+                            ->withTemplateCode($message->template)
+                            ->request();
+
+        if ($res->get('Code') !== 'OK') {
+            throw new AliyunSmsException($res->get('Message') . ' (' . $res->get('Code') . ')');
         }
 
         return $res;

@@ -2,4 +2,8 @@
 
 namespace GrantHolle\Notifications\Exceptions;
 
-class AliyunSmsException extends \Exception {}
+use Exception;
+
+class AliyunSmsException extends Exception
+{
+}
