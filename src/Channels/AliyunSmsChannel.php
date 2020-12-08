@@ -12,18 +12,18 @@ use Illuminate\Notifications\Notification;
 class AliyunSmsChannel
 {
     /**
-     * @var SendSms
+     * @var string
      */
-    protected $aliyun;
+    protected $signName;
 
     /**
      * Create a new Aliyun SMS channel instance.
      *
-     * @param SendSms $aliyun
+     * @param string $signName
      */
-    public function __construct(SendSms $aliyun)
+    public function __construct(string $signName)
     {
-        $this->aliyun = $aliyun;
+        $this->signName = $signName;
     }
 
     /**
@@ -43,18 +43,20 @@ class AliyunSmsChannel
             return null;
         }
 
-        /**
-         * @var AliyunMessage $message
-         */
+        /** @var AliyunMessage $message */
         $message = $notification->toAliyunSms($notifiable);
 
+        $aliyun = (new SendSms)
+            ->withSignName($this->signName);
+
         if (filled($message->data)) {
-            $this->aliyun->withTemplateParam(json_encode($message->data));
+            $aliyun->withTemplateParam(json_encode($message->data));
         }
 
-        $res = $this->aliyun->withPhoneNumbers($to)
-                            ->withTemplateCode($message->template)
-                            ->request();
+        $res = $aliyun
+            ->withPhoneNumbers($to)
+            ->withTemplateCode($message->template)
+            ->request();
 
         if ($res->get('Code') !== 'OK') {
             throw new AliyunSmsException($res->get('Message') . ' (' . $res->get('Code') . ')');
