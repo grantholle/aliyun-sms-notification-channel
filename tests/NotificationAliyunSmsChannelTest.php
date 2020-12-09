@@ -8,48 +8,58 @@ use GrantHolle\Notifications\Channels\AliyunSmsChannel;
 use GrantHolle\Notifications\Messages\AliyunMessage;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
-use Mockery;
-use PHPUnit\Framework\TestCase;
+use Mockery\MockInterface;
+use Orchestra\Testbench\TestCase;
 
 class NotificationAliyunSmsChannelTest extends TestCase
 {
+
     public function testSmsIsSentViaAliyun()
     {
         $notification = new NotificationAliyunChannelTestNotification;
         $notifiable = new NotificationAliyunChannelTestNotifiable;
         $message = $notification->toAliyunSms($notifiable);
 
-        $aliyun = Mockery::mock(SendSms::class);
-        $result = Mockery::mock(Result::class);
-        $result->shouldReceive('get')
-               ->with('Code')
-               ->andReturn('OK');
+        $result = $this->mock(Result::class, function (MockInterface $mock) {
 
-        $aliyun->shouldReceive('withPhoneNumbers')
-               ->andReturnUsing(function ($phoneNumbers) use ($notifiable, $aliyun) {
-                   $this->assertEquals($notifiable->phone_number, $phoneNumbers);
+            $mock->shouldReceive('get')
+                 ->with('Code')
+                 ->andReturn('OK');
 
-                   return $aliyun;
-               });
+        });
 
-        $aliyun->shouldReceive('withTemplateCode')
-               ->andReturnUsing(function ($template) use ($message, $aliyun) {
-                   $this->assertEquals($message->template, $template);
+        $this->mock(SendSms::class, function (MockInterface $mock) use ($notifiable, $message, $result) {
 
-                   return $aliyun;
-               });
+            $mock->shouldReceive('withSignName')
+                 ->andReturn($mock);
 
-        $aliyun->shouldReceive('withTemplateParam')
-               ->andReturnUsing(function ($param) use ($message, $aliyun) {
-                   $this->assertEquals(json_encode($message->data), $param);
+            $mock->shouldReceive('withPhoneNumbers')
+                 ->andReturnUsing(function ($phoneNumbers) use ($notifiable, $mock) {
+                     $this->assertEquals($notifiable->phone_number, $phoneNumbers);
 
-                   return $aliyun;
-               });
+                     return $mock;
+                 });
 
-        $aliyun->shouldReceive('request')
-               ->andReturn($result);
+            $mock->shouldReceive('withTemplateCode')
+                 ->andReturnUsing(function ($template) use ($message, $mock) {
+                     $this->assertEquals($message->template, $template);
 
-        $channel = new AliyunSmsChannel($aliyun);
+                     return $mock;
+                 });
+
+            $mock->shouldReceive('withTemplateParam')
+                 ->andReturnUsing(function ($param) use ($message, $mock) {
+                     $this->assertEquals(json_encode($message->data), $param);
+
+                     return $mock;
+                 });
+
+            $mock->shouldReceive('request')
+                 ->andReturn($result);
+
+        });
+
+        $channel = new AliyunSmsChannel('sign-name');
         $channel->send($notifiable, $notification);
     }
 }
