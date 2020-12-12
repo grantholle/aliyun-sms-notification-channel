@@ -46,8 +46,9 @@ class AliyunSmsChannel
         /** @var AliyunMessage $message */
         $message = $notification->toAliyunSms($notifiable);
 
-        $aliyun = (new SendSms)
-            ->withSignName($this->signName);
+        /** @var SendSms $aliyun */
+        $aliyun = resolve(SendSms::class);
+        $aliyun->withSignName($this->signName);
 
         if (filled($message->data)) {
             $aliyun->withTemplateParam(json_encode($message->data));
