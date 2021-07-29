@@ -23,10 +23,10 @@ ALIYUN_SMS_SIGN_NAME=名字
 In `config/services.php`, add the following:
 
 ```php
-'aliyun-sms' => [
-    'access_key' => env('ALIYUN_SMS_AK'),
-    'access_secret' => env('ALIYUN_SMS_AS'),
-    'sign_name' => env('ALIYUN_SMS_SIGN_NAME'),
+'aliyun_sms' => [
+    'key' => env('ALIYUN_SMS_AK'),
+    'secret' => env('ALIYUN_SMS_AS'),
+    'sign' => env('ALIYUN_SMS_SIGN_NAME'),
 ],
 ```
 

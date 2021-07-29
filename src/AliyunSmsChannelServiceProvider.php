@@ -22,15 +22,15 @@ class AliyunSmsChannelServiceProvider extends ServiceProvider
         Notification::resolved(function (ChannelManager $channelManager) {
             $channelManager->extend('aliyun', function ($app) {
                 AlibabaCloud::accessKeyClient(
-                    $app['config']['services.aliyun-sms.access_key'],
-                    $app['config']['services.aliyun-sms.access_secret']
+                    $app['config']['services.aliyun_sms.key'],
+                    $app['config']['services.aliyun_sms.secret']
                 )
                     ->asDefaultClient()
                     ->regionId('cn-hangzhou');
 
                 Dysmsapi::v20170525();
 
-                return new Channels\AliyunSmsChannel($app['config']['services.aliyun-sms.sign_name']);
+                return new Channels\AliyunSmsChannel($app['config']['services.aliyun_sms.sign']);
             });
         });
     }
