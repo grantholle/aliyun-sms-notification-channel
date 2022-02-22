@@ -17,6 +17,11 @@ class AliyunSmsChannel
     protected $signName;
 
     /**
+     * @var string|null;
+     */
+    protected static $alwaysTo;
+
+    /**
      * Create a new Aliyun SMS channel instance.
      *
      * @param string $signName
@@ -24,6 +29,11 @@ class AliyunSmsChannel
     public function __construct(string $signName)
     {
         $this->signName = $signName;
+    }
+
+    public static function alwaysTo($alwaysTo)
+    {
+        static::$alwaysTo = $alwaysTo;
     }
 
     /**
@@ -41,6 +51,10 @@ class AliyunSmsChannel
     {
         if (!$to = $notifiable->routeNotificationFor('aliyun', $notification)) {
             return null;
+        }
+
+        if (static::$alwaysTo !== null) {
+            $to = static::$alwaysTo;
         }
 
         /** @var AliyunMessage $message */
