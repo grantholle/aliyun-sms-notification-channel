@@ -32,6 +32,26 @@ In `config/services.php`, add the following:
 
 ## Usage
 
+### During Development
+
+When developing your application, it may be a good idea to prevent accidentally sending SMS messages to real phone numbers. To safeguard against this, you can use the `alwaysTo` function for non-production environments.
+
+Add this snippet in your `AppServiceProvider` to prevent spamming real people.
+
+```php
+use GrantHolle\Notifications\Channels\AliyunSmsChannel;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot()
+    {
+        if (!app()->environment('production')) {
+            AliyunSmsChannel::alwaysTo('your-phone-number');
+        }
+    }
+}
+```
+
 ### Create the Notification
 
 Generate a new notification for your application.
