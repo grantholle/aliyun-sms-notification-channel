@@ -13,6 +13,49 @@ use Orchestra\Testbench\TestCase;
 
 class NotificationAliyunSmsChannelTest extends TestCase
 {
+    public function testAlwaysToWorks()
+    {
+        $notification = new NotificationAliyunChannelTestNotification;
+        $notifiable = new NotificationAliyunChannelTestNotifiable;
+        $alwaysTo = '11223344';
+        AliyunSmsChannel::alwaysTo($alwaysTo);
+
+        $result = $this->mock(Result::class, function (MockInterface $mock) {
+
+            $mock->shouldReceive('get')
+                ->with('Code')
+                ->andReturn('OK');
+
+        });
+
+        $this->mock(SendSms::class, function (MockInterface $mock) use ($alwaysTo, $result) {
+
+            $mock->shouldReceive('withSignName')
+                 ->andReturn($mock);
+
+            $mock->shouldReceive('withPhoneNumbers')
+                 ->andReturnUsing(function ($phoneNumbers) use ($alwaysTo, $mock) {
+                     $this->assertEquals($alwaysTo, $phoneNumbers);
+
+                     return $mock;
+                 });
+
+            $mock->shouldReceive('withTemplateParam')
+                 ->andReturn($mock);
+
+            $mock->shouldReceive('withTemplateCode')
+                 ->andReturn($mock);
+
+            $mock->shouldReceive('request')
+                ->andReturn($result);
+
+        });
+
+        $channel = new AliyunSmsChannel('sign-name');
+        $channel->send($notifiable, $notification);
+
+        AliyunSmsChannel::alwaysTo(null);
+    }
 
     public function testSmsIsSentViaAliyun()
     {
