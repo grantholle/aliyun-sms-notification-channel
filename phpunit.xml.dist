@@ -10,7 +10,7 @@
     </include>
   </coverage>
   <testsuites>
-    <testsuite name="Nexmo Channel Test Suite">
+    <testsuite name="Aliyun SMS Channel Test Suite">
       <directory suffix="Test.php">./tests</directory>
     </testsuite>
   </testsuites>
